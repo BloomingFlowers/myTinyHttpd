@@ -1,8 +1,9 @@
 # myTinyHttpd
  tinyhttpd 是一个不到 500 行的超轻量型 Http Server，用来学习非常不错，可以帮助我们真正理解服务器程序的本质。
  看完所有源码，真的感觉有很大收获，无论是 unix 的编程，还是 GET/POST 的 Web 处理流程，都清晰了不少。废话不说，开始我们的 Server 探索之旅。
-   先解释每个函数的作用：
-
+   
+    先解释每个函数的作用：
+   
      accept_request:  处理从套接字上监听到的一个 HTTP 请求，在这里可以很大一部分地体现服务器处理请求流程。
 
      bad_request: 返回给客户端这是个错误请求，HTTP 状态吗 400 BAD REQUEST.
@@ -44,8 +45,11 @@
 
     （7） 建立两个管道，cgi_input 和 cgi_output, 并 fork 一个进程。
 
-    （8） 在子进程中，把 STDOUT 重定向到 cgi_outputt 的写入端，把 STDIN 重定向到 cgi_input 的读取端，关闭 cgi_input 的写入端 和 cgi_output 的读取端，设置 request_method 的环境变量，GET 的话设置 query_string 的环境变量，POST 的话设置 content_length 的环境变量，这些环境变量都是为了给 cgi 脚本调用，接着用 execl 运行 cgi 程序。
+    （8） 在子进程中，把 STDOUT 重定向到 cgi_outputt 的写入端，把 STDIN 重定向到 cgi_input 的读取端，关闭 cgi_input 的写入端 和
+    cgi_output 的读取端，设置 request_method 的环境变量，GET 的话设置 query_string 的环境变量，POST 的话设置 content_length 的环境变量，
+    这些环境变量都是为了给 cgi 脚本调用，接着用 execl 运行 cgi 程序。
 
-    （9） 在父进程中，关闭 cgi_input 的读取端 和 cgi_output 的写入端，如果 POST 的话，把 POST 数据写入 cgi_input，已被重定向到 STDIN，读取 cgi_output 的管道输出到客户端，该管道输入是 STDOUT。接着关闭所有管道，等待子进程结束。
+    （9） 在父进程中，关闭 cgi_input 的读取端 和 cgi_output 的写入端，如果 POST 的话，把 POST 数据写入 cgi_input，已被重定向到 STDIN，
+    读取 cgi_output 的管道输出到客户端，该管道输入是 STDOUT。接着关闭所有管道，等待子进程结束。
 
     （10） 关闭与浏览器的连接，完成了一次 HTTP 请求与回应，因为 HTTP 是无连接的。
